@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your UI</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      transition: background-image 0.5s ease-in-out;
+    }
+
+    #game {
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      text-align: center;
+      margin-bottom: 50px;
+      position: relative;
+      margin-top: -30px;
+      width: 400px;
+    }
+
+    #characterImage {
+      max-width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    #name {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    #text {
+      font-size: 24px;
+      line-height: 1.5;
+      margin-bottom: 30px;
+    }
+
+    #next {
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 5px;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #next:hover {
+      background-color: #45a049;
+    }
+
+    body.castle {
+      background-image: url('魔王城.jpg');
+    }
+
+    body.bridge {
+      background-image: url('橋.jpg');
+    }
+
+    body.mountain {
+      background-image: url('山道.jpg');
+    }
+
+    body.M {
+      background-image: url('M_character_image.jpg');
+    }
+
+    body.adventure {
+      background-image: url('AとBの大冒険.jpg');
+    }
+
+    body.preConversation #characterImage {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="game">
+    <img id="characterImage" src="pre-conversation-image.jpg" alt="Pre-conversation Image">
+    <div id="name"></div>
+    <div id="text"></div>
+    <button id="next">次へ</button>
+  </div>
+
+  <script>
+    let textIndex = 0;
+    let dialogues = [
+      { name: '', text: 'AとBの大冒険', background: 'adventure' },
+      { name: 'A', text: 'よし、B！魔王討伐のために魔王城に向かうぞ！', background: 'mountain' },
+      { name: 'B', text: 'そうだな、A。でも途中ってなんか退屈だよな。何か話題ないか？', background: 'mountain' },
+      { name: 'A', text: 'そうだな。あれ、この山ってなんでこんなに急なの？', background: 'mountain' },
+      { name: 'B', text: '確かに、もっと緩やかな坂道がいいんじゃないか？って思うよね。', background: 'mountain' },
+      { name: 'A', text: 'そうだな。それにしても、お前の剣ってなんでいつもピカピカ光ってるんだ？', background: 'mountain' },
+      { name: 'B', text: 'ああ、これは魔物の血を浴びると光るんだ。便利だよ、夜になったときとか。', background: 'mountain' },
+      { name: 'A', text: 'へぇ、それはなかなかカッコいいじゃん。俺も何か特技を身につけたいな。', background: 'mountain' },
+      { name: 'B', text: 'お前は何か得意なことあるじゃん。例えば、飛び道具を使いこなすとか？', background: 'mountain' },
+      { name: 'A', text: 'そうだな。でも、飛び道具よりも接近戦が好きだな。迫力があっていい感じだし。', background: 'mountain' },
+      { name: 'B', text: 'なるほど、確かに接近戦の方が臨場感あるよね。でも飛び道具も侮れないぞ。', background: 'mountain' },
+      { name: 'A', text: 'そういや、この先に長い橋があるみたいだな。あれが噂の超長い橋か？', background: 'mountain' },
+      { name: 'B', text: 'うん、それがあの橋だよ。モンスターとの連戦が待ってるって話だ。', background: 'mountain' },
+      { name: 'A', text: 'へぇ、モンスターとの戦闘か。楽しみだな。でも橋の上で戦うのはなかなか厳しいだろうな。', background: 'mountain' },
+      { name: 'B', text: 'そうだな。足元が不安定だから注意が必要だ。でも頑張ろう、A！', background: 'mountain' },
+      { name: 'A', text: 'だろうな。おい、橋渡る前に何かおかしなことでも話そうぜ。', background: 'mountain' },
+      { name: 'B', text: 'そうだな。例えば…あれ、お前、昨日の晩餐、なんで俺の分まで全部食べたんだよ？', background: 'mountain' },
+      { name: 'A', text: 'ああ、それはさ、気がつかなかったんだ。ごめんな。', background: 'mountain' },
+      { name: 'B', text: '冗談だよ、冗談。でも本当に気をつけろよ、お前の食欲。', background: 'mountain' },
+      { name: 'A', text: 'まあ、それはわかってるって。お前もそうだろ？魔王の城には美味しいものがあるかもしれないぞ。', background: 'mountain' },
+      { name: 'B', text: 'そうだな、期待してるよ。でもまずは魔王を倒してからだ。', background: 'mountain' },
+      { name: 'A', text: 'そうだな。あれ、橋渡る前に見てみろ、向こうにモンスターの群れがいるぞ！', background: 'mountain' },
+      { name: 'B', text: 'じゃあ、ここからが本番だ。準備はいいか、A？', background: 'mountain' },
+      { name: 'A', text: 'もちろんだ。さあ、行くぞ、B！', background: 'mountain' },
+      { name: 'B', text: 'おお、行くぞ、A！', background: 'mountain' },
+      { name: '', text: '橋の上でモンスターとの戦闘が繰り広げられる。AとBは連携してモンスターを次々に倒していく。', background: 'bridge' },
+      { name: 'A', text: 'くそっ、このモンスター、なかなか手ごわいな！', background: 'bridge' },
+      { name: 'B', text: 'そうだな、でもくじけるな、A！連携が大事だから、相手の動きを見て動こう。', background: 'bridge' },
+      { name: 'A', text: '分かった。おい、B、後ろだ！', background: 'bridge' },
+      { name: 'B', text: 'おお、ありがとう、A！危なかったな。こっちも気をつけないとな。', background: 'bridge' },
+      { name: '', text: 'モンスターとの激しい戦闘の末、AとBは無事に橋を渡りきる。', background: 'bridge' },
+      { name: 'A', text: 'よし、なんとか橋を渡りきったな。これで魔王城も近いはずだ。', background: 'bridge' },
+      { name: 'B', text: 'そうだな。でも、今の戦い、なかなかアクションが凄かったな。感動したぞ！', background: 'bridge' },
+      { name: 'A', text: 'おお、ありがとう。お前の剣さばきも素晴らしかったぜ。さて、魔王城に到着だ。', background: 'castle' },
+      { name: 'B', text: 'そうだな。あれ、あそこに魔王が立ってるぞ！何だか嫌な予感がするが…', background: 'castle' },
+      { name: '', text: '魔王が微笑みながら二人に向かって歩いてくる。', background: 'castle' },
+      { name: '魔王', text: 'おお、勇者AとBよ。よくもここまで辿り着いたな。だが、この先がお前たちの墓場だ。', background: 'castle' },
+      { name: 'A', text: 'くそっ、威張りやがって。覚悟しろ、魔王！', background: 'castle' },
+      { name: 'B', text: '俺たちの友情が勝つんだ、魔王。さあ、かかってこい！', background: 'castle' },
+      { name: '', text: '戦いが始まり、AとBは魔王と激しい戦いを繰り広げる。', background: 'castle' },
+      { name: 'A', text: 'くっ…この魔王、強いな。だが、俺たちには負けないぞ！', background: 'castle' },
+      { name: 'B', text: 'そうだ、A。絶対に負けない。仲間を守るために戦おう！', background: 'castle' },
+      { name: '', text: '戦闘が激化する中、Bは息を引き取りながらAに微笑む。', background: 'castle' },
+      { name: 'A', text: ' B…くそっ、なんで…！', background: 'castle' },
+      { name: '', text: 'Bは微笑みながら息を引き取り、Aは怒りと悲しみに包まれながら魔王に立ち向かう。', background: 'castle' },
+      { name: 'A', text: 'B…くそっ、この仇を必ず討つ！ありがとう、友よ…', background: 'castle' },
+      { name: '', text: 'Aが悲しみに押しつぶされそうな中、Aが奮起し、最後の力を振り絞って魔王を倒す。', background: 'castle' },
+      { name: 'A', text: '終わったな…B、お前の分も果たせた…。', background: 'castle' },
+      { name: 'A', text: '俺は生きて帰る…そしてお前の冒険を語り継ぐ。ありがとう、B。', background: 'castle' },
+　　　{ name: '', text: 'Aは魔王城を後にし、Bの亡骸を背負いながら帰路につく。', background: 'castle' },
+    ];
+
+    let characterImages = {
+      'A': 'A.jpg',
+      'B': 'B.jpg',
+      '魔王': '魔王.jpg',
+    };
+
+    function showNextText() {
+      let characterImage = document.getElementById('characterImage');
+      let nameDiv = document.getElementById('name');
+      let textDiv = document.getElementById('text');
+      let body = document.body;
+
+      if (textIndex < dialogues.length) {
+        nameDiv.textContent = dialogues[textIndex].name;
+        textDiv.innerHTML = dialogues[textIndex].text;
+
+        let characterName = dialogues[textIndex].name;
+
+        if (characterName in characterImages) {
+          characterImage.src = characterImages[characterName];
+          characterImage.style.display = '';
+        } else {
+          characterImage.src = '';
+          characterImage.style.display = 'none';
+        }
+
+        body.className = ''; // Clear existing classes
+
+        if (dialogues[textIndex].background) {
+          body.classList.add(dialogues[textIndex].background);
+        }
+
+        textIndex++;
+      } else {
+　　　　characterImage.style.display = 'none';
+        textDiv.innerHTML = 'おしまい';
+        characterImage.src = '';
+      }
+    }
+
+    let nextButton = document.getElementById('next');
+    nextButton.addEventListener('click', showNextText);
+
+    showNextText(); // 初期化処理
+  </script>
+</body>
+</html>
